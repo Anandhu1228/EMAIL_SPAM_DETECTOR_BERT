@@ -1,0 +1,315 @@
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        font-family: 'Roboto', sans-serif;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+    }
+
+    .background-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        filter: brightness(0.5);
+    }
+
+    .title {
+        font-family: 'Great Vibes', cursive;
+        font-size: 3rem;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+        position: absolute;
+        top: 200px;
+        left: 200px;
+        text-align: left;
+    }
+
+    #loading-indicator{
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        z-index: 3000;
+    }
+
+    #loading-indicator p{
+        margin: 10px 0;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    #loading-indicator .spinner{
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    } 
+
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+        display: none;
+    }
+
+    .mail_send{
+        width: 1000px;
+        border-radius: 10px;
+        padding: 7px;
+    }
+
+    .all_mail{
+        position: absolute;
+        top: 300px;
+        left: 200px;
+    }
+
+    .btn {
+        align-items: center;
+        justify-content: center;
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .btn i {
+        font-size: 18px;
+    }
+
+     .applause {
+        font-size: 2rem;
+        font-weight: bold;
+        color: white;
+        display: none;
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation-duration: 3s;
+    }
+
+    #balloonExplosion {
+        position: fixed;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: none;
+        z-index: 3000;
+    }
+
+    .balloon {
+        width: 50px;
+        height: 70px;
+        background-color: #37b3e4;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 0;
+        animation: balloonAnimation 2s ease-out forwards;
+    }
+
+    .balloon:nth-child(1) {
+        left: 0;
+        animation-delay: 0.2s;
+    }
+
+    .balloon:nth-child(2) {
+        left: 60px;
+        animation-delay: 0.4s;
+    }
+
+    .balloon:nth-child(3) {
+        left: 120px;
+        animation-delay: 0.6s;
+    }
+
+    @keyframes balloonAnimation {
+        0% { bottom: 0; opacity: 1; }
+        100% { bottom: 200px; opacity: 0; transform: scale(1.5); }
+    }
+
+    #resultDisplay{
+        position: absolute;
+        bottom: 200px;
+    }
+
+    /* Warning triangle animation */
+    #warningTriangle {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: red;
+        z-index: 3000;
+        opacity: 0;
+        animation: warningAnimation 3s forwards;
+    }
+
+    .triangle {
+        width: 0;
+        height: 0;
+        border-left: 50px solid transparent;
+        border-right: 50px solid transparent;
+        border-bottom: 100px solid red;
+        margin: 0 auto;
+    }
+
+    @keyframes warningAnimation {
+        0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+        50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+    }
+
+    #warningTriangle p {
+        font-size: 1.5rem;
+        margin-top: 20px;
+    }
+
+</style>
+
+
+<body>
+    <div id="overlay"></div>
+
+    <video class="background-video" autoplay muted loop>
+        <source src="/images/BACKGROUND.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="title">SPAM DETECTOR</div>
+
+    <div class="all_mail">
+        <textarea id="mail_send" class="mail_send" placeholder="Enter your mail content" name="Email_content"></textarea>
+        <button id="send_button" class="btn btn_abs">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <div id="resultDisplay" style="display: none;">
+        <h3 id="classificationResult"></h3>
+    </div>
+
+    <!-- Balloons explosion -->
+    <div id="balloonExplosion" style="display: none;">
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+        <div class="balloon"></div>
+    </div>
+
+    <!-- Warning triangle -->
+    <div id="warningTriangle" style="display: none;" class="warning">
+        <div class="triangle"></div>
+        <p>SPAM DETECTED!</p>
+    </div>
+
+    <div id="loading-indicator">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <script>
+        const textarea = document.getElementById('mail_send');
+        textarea.addEventListener('input', () => {
+            textarea.style.height = 'auto';
+            textarea.style.height = `${textarea.scrollHeight}px`;
+        });
+
+        document.getElementById('send_button').addEventListener('click', async () => {
+            const emailContent = document.getElementById('mail_send').value;
+
+            showLoadingIndicator();
+
+            try {
+                const response = await fetch('/get_mail', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ Email_content: emailContent }),
+                });
+
+                if (response.ok) {
+                    const result = await response.text();
+
+                    hideLoadingIndicator();
+
+                    document.getElementById('classificationResult').textContent = `${result}`;
+                    document.getElementById('resultDisplay').style.display = 'block';
+
+                    // Trigger animations based on result
+                    if (result.toUpperCase() === 'NOT SPAM') {
+                        document.getElementById('balloonExplosion').style.display = 'block';
+                        document.getElementById('warningTriangle').style.display = 'none';
+                    } else if (result.toUpperCase() === 'SPAM') {
+                        document.getElementById('balloonExplosion').style.display = 'none';
+                        document.getElementById('warningTriangle').style.display = 'block';
+                    }
+                } else {
+                    alert('Failed to classify email. Please try again.');
+                    hideLoadingIndicator();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+                hideLoadingIndicator();
+            }
+        });
+
+        function showLoadingIndicator() {
+            document.getElementById('loading-indicator').style.display = 'block';
+            showOverlay();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideLoadingIndicator() {
+            document.getElementById('loading-indicator').style.display = 'none';
+            hideOverlay();
+            document.body.style.overflow = 'auto';
+        }
+
+        function showOverlay() {
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function hideOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
+</body>
